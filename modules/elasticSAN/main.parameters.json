@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "elasticSanName": {
+            "value": "esan-cis-test"
+        },
+        "elasticSanLocation": {
+            "value": "uksouth"
+        },
+        "availabilityZones": {
+            "value": [
+                "1"
+            ]
+        },
+        "baseSizeTiB": {
+            "value": 1
+        },
+        "extendedCapacitySizeTiB": {
+            "value": 0
+        },
+        "skuName": {
+            "value": "Premium_LRS"
+        },
+        "volumeGroups": {
+            "value": [
+                {
+                    "volumeGroupName": "vg-cis-test",
+                    "encryptionType": "EncryptionAtRestWithPlatformKey",
+                    "protocolType": "iSCSI",
+                    "networkAcls": {
+                        "virtualNetworkRules": []
+                    },
+                    "volumes": [
+                        {
+                            "volumeName": "vol-cis-test",
+                            "sizeGiB": "512"
+                        }
+                    ]
+                }
+            ]
+        },
+        "tags": {
+            "value": {}
+        }
+    }
+}
