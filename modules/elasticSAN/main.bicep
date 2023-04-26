@@ -43,3 +43,7 @@ module volumeGroups_0_volumeGroups_volumeGroup './volumeGroup.bicep' = [for i in
     elasticSan
   ]
 }]
+
+output targets array = [for i in range(0, length(range(0, length(volumeGroups)))): {
+  targets: volumeGroups_0_volumeGroups_volumeGroup[i].outputs.targets
+} ]

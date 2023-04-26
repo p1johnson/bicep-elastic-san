@@ -26,6 +26,14 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = {
         name: serverSubnetName
         properties: {
           addressPrefix: serverSubnetAddress
+          serviceEndpoints: [
+            {
+              locations: [
+                location
+              ]
+              service: 'Microsoft.Storage'
+            }
+          ]
         }
       }
       {

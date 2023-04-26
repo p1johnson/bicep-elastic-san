@@ -17,3 +17,9 @@ resource parentElasticSanName_volumeGroupObject_volumeGroupName_volumeGroupObjec
     sizeGiB: volumeGroupObject.volumes[range(0, length(volumeGroupObject.volumes))[i]].sizeGiB
   }
 }]
+
+output targets array = [for i in range(0, length(range(0, length(volumeGroupObject.volumes)))): {
+  targetIqn: parentElasticSanName_volumeGroupObject_volumeGroupName_volumeGroupObject_volumes_0_volumeGroupObject_volumes_volume[i].properties.storageTarget.targetIqn
+  targetPortalHostName: parentElasticSanName_volumeGroupObject_volumeGroupName_volumeGroupObject_volumes_0_volumeGroupObject_volumes_volume[i].properties.storageTarget.targetPortalHostname
+  targetIqnPortalPort: parentElasticSanName_volumeGroupObject_volumeGroupName_volumeGroupObject_volumes_0_volumeGroupObject_volumes_volume[i].properties.storageTarget.targetPortalPort
+}]
