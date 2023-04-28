@@ -11,7 +11,7 @@ param serverSubnetName string = 'default'
 param serverSubnetAddress string = '10.0.1.0/24'
 param bastionSubnetAddress string = '10.0.0.192/26'
 param bastionName string = 'bas-esan-demo'
-//param windowsServerName string = 'bicepdemo'
+param windowsServerName string = 'esandemo'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: resourceGroupName
@@ -42,7 +42,7 @@ module azureBastion 'modules/azureBastion/azuredeploy.bicep' = {
   }
 }
 
-/* module windowsServer 'modules/windowsServer/azuredeploy.bicep' = {
+module windowsServer 'modules/windowsServer/azuredeploy.bicep' = {
   name: 'windowsServer'
   scope: resourceGroup
   params: {
@@ -50,7 +50,7 @@ module azureBastion 'modules/azureBastion/azuredeploy.bicep' = {
     serverName: windowsServerName
     subnetId: virtualNetwork.outputs.serverSubnetId
   }
-} */
+}
 
 module elasticSAN 'modules/elasticSAN/main.bicep' = {
   scope: resourceGroup
