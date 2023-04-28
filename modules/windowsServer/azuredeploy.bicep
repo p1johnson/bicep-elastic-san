@@ -15,9 +15,9 @@ param osDiskName string = 'mdk-${serverName}-os'
 param osDiskType string = 'StandardSSD_LRS'
 param networkInterfaceName string = 'nic-${serverName}'
 param subnetId string
-param dscUrl string = 'https://gist.github.com/p1johnson/3817a791bd82d1d0e469104432128f59/raw/JumpServer.zip'
-param dscScript string = 'JumpServer.ps1'
-param dscFunction string = 'JumpServer'
+param dscUrl string = 'https://github.com/p1johnson/bicep-elastic-san/blob/main/dsc/ConfigureServer.zip?raw=true'
+param dscScript string = 'ConfigureServer.ps1'
+param dscFunction string = 'ConfigureServer'
 
 resource networkInterface 'Microsoft.Network/networkInterfaces@2021-05-01' = {
   name: networkInterfaceName
