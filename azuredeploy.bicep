@@ -49,6 +49,9 @@ module windowsServer 'modules/windowsServer/azuredeploy.bicep' = {
     location: location
     serverName: windowsServerName
     subnetId: virtualNetwork.outputs.serverSubnetId
+    targetIqn: elasticSAN.outputs.targetIqn
+    targetHostname: elasticSAN.outputs.targetPortalHostname
+    targetPort: elasticSAN.outputs.targetPortalPort
   }
 }
 
@@ -64,29 +67,13 @@ module elasticSAN 'modules/elasticSAN/main.bicep' = {
     baseSizeTiB: 1
     extendedCapacitySizeTiB: 0
     skuName: 'Premium_LRS'
-    volumeGroups: [
-      {
-        volumeGroupName: 'vg-cis-test'
-        encryptionType: 'EncryptionAtRestWithPlatformKey'
-        protocolType: 'iSCSI'
-        networkAcls: {
-          virtualNetworkRules: [
-            {
-              action: 'Allow'
-              id: virtualNetwork.outputs.serverSubnetId
-            }
-          ]
-        }
-        volumes: [
-          {
-            volumeName: 'vol-cis-test'
-            sizeGiB: '512'
-          }
-        ]
-      }
-    ]
-    tags: {}
+    volumeGroupName: 'vg-cis-test'
+    subnetId: virtualNetwork.outputs.serverSubnetId
+    volumeName: 'vol-cis-test'
+    volumeSizeGiB: 512
   }
 }
 
-output targets array = elasticSAN.outputs.targets
+output targetIqn string = elasticSAN.outputs.targetIqn
+output targetPortalHostname string = elasticSAN.outputs.targetPortalHostname
+output targetPortalPort int = elasticSAN.outputs.targetPortalPort

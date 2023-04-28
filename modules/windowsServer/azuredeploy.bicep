@@ -18,6 +18,15 @@ param subnetId string
 param dscUrl string = 'https://github.com/p1johnson/bicep-elastic-san/blob/main/dsc/ConfigureServer.zip?raw=true'
 param dscScript string = 'ConfigureServer.ps1'
 param dscFunction string = 'ConfigureServer'
+param targetIqn string
+param targetHostname string
+param targetPort int
+param scriptExtensionTimestamp string = utcNow()
+
+var scriptExtensionCommandToExecute = 'powershell -ExecutionPolicy Unrestricted -File ./LoginTarget.ps1 -TargetIqn ${targetIqn} -TargetHostname ${targetHostname} -TargetPort ${targetPort}'
+var scriptExtensionFileUris = [
+  'https://github.com/p1johnson/bicep-elastic-san/blob/main/powershell/LoginTarget.ps1?raw=true'
+]
 
 resource networkInterface 'Microsoft.Network/networkInterfaces@2021-05-01' = {
   name: networkInterfaceName
@@ -97,6 +106,28 @@ resource virtualMachineDscExtension 'Microsoft.Compute/virtualMachines/extension
         script: dscScript
         function: dscFunction
       }
+    }
+  }
+}
+
+resource scriptExtension 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = {
+  name: 'configure'
+  location: location
+  parent: virtualMachine
+  dependsOn: [
+    virtualMachineDscExtension
+  ]
+  properties: {
+    publisher: 'Microsoft.Compute'
+    type: 'CustomScriptExtension'
+    typeHandlerVersion: '1.10'
+    autoUpgradeMinorVersion: true
+    settings: {
+      timestamp: scriptExtensionTimestamp
+    }
+    protectedSettings: {
+      commandToExecute: scriptExtensionCommandToExecute
+      fileUris: scriptExtensionFileUris
     }
   }
 }

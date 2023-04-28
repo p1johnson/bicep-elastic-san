@@ -1,5 +1,5 @@
 @description('Elastic SAN name')
-param elasticSanName string = 'elasticsan${uniqueString(resourceGroup().id)}'
+param elasticSanName string
 
 @description('Location for the Elastic SAN')
 param elasticSanLocation string = resourceGroup().location
@@ -14,14 +14,21 @@ param baseSizeTiB int
 param extendedCapacitySizeTiB int
 
 @description('The SKU name for the elastic SAN')
-param skuName string
-param volumeGroups array = []
-param tags object
+param skuName string = 'Premium_LRS'
+
+param volumeGroupName string
+param encryptionType string = 'EncryptionAtRestWithPlatformKey'
+param protocolType string = 'iSCSI'
+param subnetId string
+param volumeName string
+param volumeSizeGiB int
+param tags object = {}
+
 
 resource elasticSan 'Microsoft.ElasticSan/elasticSans@2021-11-20-preview' = {
   name: elasticSanName
   location: elasticSanLocation
-  tags: (empty(tags) ? null : tags)
+  tags: tags
   properties: {
     availabilityZones: (empty(availabilityZones) ? null : availabilityZones)
     baseSizeTiB: baseSizeTiB
@@ -33,17 +40,32 @@ resource elasticSan 'Microsoft.ElasticSan/elasticSans@2021-11-20-preview' = {
   }
 }
 
-module volumeGroups_0_volumeGroups_volumeGroup './volumeGroup.bicep' = [for i in range(0, length(range(0, length(volumeGroups)))): {
-  name: volumeGroups[range(0, length(volumeGroups))[i]].volumeGroupName
-  params: {
-    volumeGroupObject: volumeGroups[range(0, length(volumeGroups))[i]]
-    parentElasticSanName: elasticSanName
+resource volumeGroup 'Microsoft.ElasticSan/elasticSans/volumegroups@2021-11-20-preview' = {
+  parent: elasticSan
+  name: volumeGroupName
+  tags: tags
+  properties: {
+    encryption: encryptionType
+    protocolType: protocolType
+    networkAcls: {
+      virtualNetworkRules: [
+        {
+          action: 'Allow'
+          id: subnetId
+        }
+      ]
+    }
   }
-  dependsOn: [
-    elasticSan
-  ]
-}]
+}
 
-output targets array = [for i in range(0, length(range(0, length(volumeGroups)))): {
-  targets: volumeGroups_0_volumeGroups_volumeGroup[i].outputs.targets
-} ]
+resource volume 'Microsoft.ElasticSan/elasticSans/volumegroups/volumes@2021-11-20-preview' = {
+  parent: volumeGroup
+  name: volumeName
+  properties: {
+    sizeGiB: volumeSizeGiB
+  }
+}
+
+output targetIqn string = volume.properties.storageTarget.targetIqn
+output targetPortalHostname string = volume.properties.storageTarget.targetPortalHostname
+output targetPortalPort int = volume.properties.storageTarget.targetPortalPort
