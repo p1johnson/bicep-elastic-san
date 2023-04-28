@@ -50,6 +50,13 @@ Configuration ConfigureServer {
             Enabled = 'False'
         }
 
+        Service MSiSCSI
+        {
+            Name = 'MSiSCSI'
+            StartupType = 'Automatic'
+            State = 'Running'
+        }
+
         WindowsFeature Multipath-IO
         {
             Name = 'Multipath-IO'
@@ -59,14 +66,7 @@ Configuration ConfigureServer {
         PendingReboot Reboot
         {
             Name = 'Reboot'
-            DependsOn = '[WindowsFeature]Multipath-IO'
-        }
-
-        Service MSiSCSI
-        {
-            Name = 'MSiSCSI'
-            StartupType = 'Automatic'
-            State = 'Running'
+            DependsOn = '[WindowsFeature]Multipath-IO','[Service]MSiSCSI'
         }
 
         Script MultipathSupport
