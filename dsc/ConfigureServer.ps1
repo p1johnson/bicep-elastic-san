@@ -11,6 +11,12 @@ Configuration ConfigureServer {
     Node 'localhost'
 
     {
+        LocalConfigurationManager
+        {
+            ConfigurationMode = 'ApplyOnly'
+            RebootNodeIfNeeded = $true
+        }
+        
         RegistryPolicyFile DisableServerManagerStart {
             Key        = 'Software\Policies\Microsoft\Windows\Server\ServerManager'
             TargetType = 'ComputerConfiguration'
